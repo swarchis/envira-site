@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "preview": "python3 -m http.server 3000 --directory out"
+    "preview": "python3 -m http.server 3100 --directory out"
   },
   "dependencies": {
     "gsap": "3.12.5",

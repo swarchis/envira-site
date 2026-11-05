@@ -9,11 +9,13 @@ npm install
 npm run dev        # http://localhost:3000 with hot reload
 ```
 
+Dev mode runs unminified React and three.js plus the Next dev overlay, so it is heavier than the real site. Judge performance with the production build below.
+
 ## Build a static site
 
 ```bash
 npm run build      # writes plain HTML/JS/CSS to out/
-npm run preview    # serves out/ at http://localhost:3000
+npm run preview    # serves out/ at http://localhost:3100
 ```
 
 `out/` can be hosted anywhere static: Vercel, Netlify, Cloudflare Pages, GitHub Pages. For GitHub Pages at `https://<user>.github.io/envira-site/`, build with the repo name as base path:
@@ -42,15 +44,16 @@ Verified identical: every element's computed style and layout box matches the or
 - Rendering is capped at 60fps. On 120Hz screens the original drew every frame twice as often.
 - Fixed a crash when the page loads in a zero-height frame (NaN scroll position killed the render loop).
 
-## GPU cost (known issue)
+## Adaptive 3D quality
 
-The scene keeps an M5 GPU at ~85% utilization at 1512x945@2x, at 60fps (macOS `ioreg` Device Utilization). Nearly all of it is the 4x-MSAA HDR render at retina resolution. Measured alternatives, each changes the look slightly:
+The scene is GPU-heavy: at level 0 (the original look) it keeps an M5 GPU at ~86%. On a fanless laptop that heats up and throttles, which shows up as lag. So `lib/scene.js` watches its own frame rate: if more than a quarter of frames arrive late over ~2 seconds, it drops one level.
 
-| Change | GPU utilization |
-| --- | --- |
-| Current | ~86% |
-| 2x MSAA instead of 4x | ~66% |
-| 1.5x pixel ratio instead of 2x | ~76% |
-| 30fps | ~66% |
-| 1x pixel ratio | ~47% |
-| Bloom off / CSS blurs off | ~86% (no gain) |
+| Level | Settings | GPU use, M5 at 1280x720@2x, 60fps |
+| --- | --- | --- |
+| 0 | 4x MSAA, 2x pixel ratio (original look) | ~86% |
+| 1 | 2x MSAA, 2x pixel ratio | ~58% |
+| 2 | 2x MSAA, 1.5x pixel ratio | ~51% |
+
+Machines that keep up stay at level 0. Compare levels with `?quality=0`, `?quality=1` or `?quality=2` (this turns the watchdog off). When it steps down it logs `Envira: ... 3D quality level N` to the browser console.
+
+Other measured options that were not worth it: bloom off or CSS blurs off (no gain), 30fps (~66%, choppy), 1x pixel ratio (~47%, visibly soft).
