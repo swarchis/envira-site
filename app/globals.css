@@ -142,3 +142,255 @@ footer .word{font-family:var(--serif);font-weight:400;font-size:clamp(110px,27vw
 @keyframes skydrift{to{transform:scale(1.03)}}
 @media (prefers-reduced-motion:reduce){#sky::before{animation:none}}
 
+
+/* ── Chapters: pinned multi-stop boards. Height = stops × 100vh; the .pin stays put while
+   scene.js cross-fades panes by local progress (--k 0..1, --kf 0..n). ───────────────── */
+.chapter{position:relative;height:calc(var(--n) * 100vh);pointer-events:none}
+.chapter .pin{position:sticky;top:0;height:100vh;display:flex;box-sizing:border-box;
+  padding:96px max(16px,env(safe-area-inset-right,0px)) 40px max(16px,env(safe-area-inset-left,0px),7vw)}
+.board{max-width:none;gap:0;background:linear-gradient(180deg,rgba(246,238,232,.035),rgba(246,238,232,0) 120px),rgba(21,16,24,.66);
+  -webkit-backdrop-filter:blur(18px) saturate(1.1);backdrop-filter:blur(18px) saturate(1.1);border:1px solid rgba(246,238,232,.08);border-radius:24px;
+  box-shadow:0 30px 80px -30px rgba(0,0,0,.6),inset 0 1px 0 rgba(246,238,232,.05);overflow:hidden}
+.board .bhd{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:16px 22px;border-bottom:1px solid var(--line)}
+.board .ctr{letter-spacing:.12em;color:var(--dim)}
+.board .ctr b{font-weight:500;color:var(--cream)}
+.board .panes{display:grid;min-width:0}
+.board .pane{grid-area:1/1;display:flex;flex-direction:column;gap:16px;min-width:0;will-change:opacity,transform}
+.board h2{font-size:clamp(28px,min(3vw,4.6vh),44px)}
+.board p{font-size:16px;max-width:44ch}
+
+/* Chapter I: dossier, left. Stage rail | content, progress bar. */
+#chA .pin{align-items:center;justify-content:flex-start}
+.dossier{width:min(640px,50vw)}
+.dossier .bbody{display:grid;grid-template-columns:168px 1fr}
+.rail{list-style:none;margin:0;padding:26px 18px 26px 22px;display:flex;flex-direction:column;gap:34px;position:relative;border-right:1px solid var(--line)}
+.rail::before,.rail::after{content:"";position:absolute;left:33px;top:50px;height:58px;width:1px;background:var(--line)}
+.rail::after{background:var(--gold);box-shadow:0 0 8px var(--glow);transform-origin:top;transform:scaleY(var(--k,0))}
+.rail li{display:grid;grid-template-columns:24px 1fr;gap:12px;align-items:start;color:var(--mute);font-size:13px;line-height:1.3;transition:color .4s}
+.rail li span{position:relative;z-index:1;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;border:1px solid var(--line);background:#1B1520;font-size:10px;color:var(--dim);transition:background .4s,border-color .4s,color .4s,box-shadow .4s}
+.rail li small{display:block;margin-top:4px;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+.rail li[data-s="done"] span{border-color:var(--gold);color:var(--gold-hi)}
+.rail li[data-s="on"]{color:var(--cream)}
+.rail li[data-s="on"] span{background:var(--gold);border-color:var(--gold);color:var(--ink);box-shadow:0 0 14px var(--glow)}
+.dossier .panes{padding:26px 28px 28px}
+.bft{display:flex;align-items:center;gap:16px;padding:14px 22px;border-top:1px solid var(--line);font-size:10px}
+.bft .bar{flex:1;height:2px;background:var(--line);position:relative;overflow:hidden;border-radius:2px}
+.bft .bar i{position:absolute;inset:0;background:var(--gold);transform-origin:left;transform:scaleX(calc(.5 + var(--k,0) * .5))}
+
+/* Chapter II: wide report docked along the bottom. Segmented tabs, story | visual. */
+#chB .pin{align-items:flex-end;justify-content:center;padding-left:max(16px,env(safe-area-inset-left,0px),4vw);padding-right:max(16px,env(safe-area-inset-right,0px),4vw)}
+.report{width:min(1180px,100%)}
+.report .bhd{display:grid;grid-template-columns:1fr auto 1fr}
+.report .bhd .ctr{justify-self:end}
+.tabs{position:relative;display:grid;grid-template-columns:repeat(3,minmax(118px,1fr));padding:4px;border:1px solid var(--line);border-radius:999px;background:rgba(246,238,232,.03);font-size:10px}
+.tabs span{position:relative;z-index:1;padding:8px 18px;text-align:center;color:var(--dim);transition:color .4s;white-space:nowrap}
+.tabs span em{margin-right:6px;color:inherit;text-shadow:none}
+.tabs span[data-s="done"]{color:var(--mute)}
+.tabs span[data-s="on"]{color:var(--cream)}
+.tabs span[data-s="on"] em{color:var(--gold-hi)}
+.tabs .ink{position:absolute;top:4px;bottom:4px;left:4px;width:calc((100% - 8px) / 3);border-radius:999px;background:rgba(224,162,133,.14);border:1px solid rgba(224,162,133,.45);box-shadow:0 0 16px rgba(224,162,133,.12);box-sizing:border-box;transform:translateX(calc(var(--kf,0) * 100%))}
+.report .cols{display:grid;grid-template-columns:1fr 1.3fr .85fr}
+.report .cols>*{padding:26px 26px 28px;border-right:1px solid var(--line)}
+.report .cols>:last-child{border-right:0}
+.report .viz .pane{gap:0;align-self:start}
+
+@media (max-width:1100px) and (min-width:760px){
+  .report .cols{grid-template-columns:1fr 1.2fr}
+  .dossier{width:min(600px,58vw)}
+  .dossier .bbody{grid-template-columns:1fr}
+  .rail{display:none}
+}
+@media (max-width:759px){
+  .chapter .pin{padding:0;align-items:flex-end!important}
+  .board{width:100%;border-radius:22px 22px 0 0;border-width:1px 0 0;padding:0}
+  .board .bhd{padding:14px 16px}
+  .board .panes,.report .cols>*{padding:18px 16px}
+  .dossier .bbody,.report .cols{grid-template-columns:1fr}
+  .rail,.bft,.report .bhd .ctr{display:none}
+  .report .bhd{grid-template-columns:1fr}
+  .report .cols>*{border-right:0}
+  .report .viz{padding-top:0}
+  .board h2{font-size:30px}
+}
+
+/* ── Simplified chapters: fewer elements, larger type (overrides the chapter block above). ── */
+.board h2{font-size:clamp(40px,min(4.4vw,6.4vh),68px);line-height:1.02}
+.board p{font-size:clamp(18px,1.5vw,22px);line-height:1.45;color:#C9BDB4;max-width:30ch}
+.board .pane{gap:22px}
+.board .bhd .lab,.tabs{font-size:12px}
+.dossier{width:min(700px,52vw)}
+.dossier .bbody{grid-template-columns:120px 1fr}
+.dossier .panes{padding:40px 40px 44px}
+.rail{gap:44px;padding:44px 0 44px 26px}
+.rail::before,.rail::after{left:39px;top:70px;height:64px}
+.rail li{align-items:center;font-size:15px;letter-spacing:.04em}
+.rail li span{width:28px;height:28px;font-size:11px}
+.dossier .diff{font-size:clamp(15px,1.25vw,18px);padding:18px 20px}
+.bft{padding:0;border-top:0}
+.bft .bar{height:3px;border-radius:0}
+.report .cols{grid-template-columns:1fr 1fr}
+.report .cols>*{padding:38px 40px 42px}
+.report .viz{align-content:center}
+.tabs{grid-template-columns:repeat(3,minmax(120px,1fr))}
+.tabs span{padding:9px 20px}
+.flow,.bench{display:flex;flex-direction:column;justify-content:center;gap:22px}
+.flow>div{display:grid;grid-template-columns:96px 1fr 56px;align-items:center;gap:18px}
+.flow .v{padding:8px 0;text-align:center;border:1px solid var(--line);border-radius:999px;font-size:13px;font-weight:600;letter-spacing:.2em;color:var(--dim)}
+.flow .v.ok{border-color:var(--gold);color:var(--gold-hi);box-shadow:0 0 12px var(--glow)}
+.flow i{height:1px;background:linear-gradient(90deg,var(--line),var(--gold));position:relative}
+.flow i::after{content:"";position:absolute;right:-1px;top:-3.5px;border:4px solid transparent;border-left:7px solid var(--gold);border-right:0}
+.flow .r{font-family:var(--serif);font-size:52px;line-height:1;color:var(--cream);text-align:right}
+.bench>div{display:grid;grid-template-columns:90px 1fr 70px;align-items:center;gap:18px}
+.bench b{display:block;height:10px;border-radius:10px;background:rgba(246,238,232,.06);position:relative;overflow:hidden}
+.bench b::after{content:"";position:absolute;inset:0;border-radius:10px;background:var(--mute);transform-origin:left;
+  transform:scaleX(calc(var(--w) * clamp(0, (var(--kf,0) - 1.35) / .6, 1)))}
+.bench .hi b::after{background:var(--gold);box-shadow:0 0 12px var(--glow)}
+.bench .n{font-family:var(--serif);font-size:52px;line-height:1;color:var(--cream);text-align:right}
+.bench .hi .n{color:var(--gold-hi)}
+.report .sim .ft{justify-content:flex-end}
+@media (max-width:1100px) and (min-width:760px){.dossier{width:min(620px,60vw)}}
+@media (max-width:759px){
+  .board h2{font-size:34px} .board p{font-size:17px}
+  .dossier .panes,.report .cols>*{padding:22px 18px}
+  .flow .r,.bench .n{font-size:38px}
+}
+
+/* team credit inside the cream footer */
+footer .team{display:flex;align-items:center;justify-content:space-between;gap:32px 56px;flex-wrap:wrap;margin-top:clamp(40px,6vw,80px);padding-top:28px;border-top:1px solid rgba(30,22,32,.14)}
+footer .team p{margin:0;max-width:30ch;font-family:var(--serif);font-size:clamp(24px,2.4vw,36px);line-height:1.2;letter-spacing:-.01em;color:var(--ink)}
+footer .team .logos{display:flex;align-items:center;gap:clamp(28px,4vw,56px)}
+footer .team img{width:auto;display:block}
+footer .team img.nu{height:clamp(26px,2.6vw,36px)}
+footer .team img.cal{height:clamp(52px,5vw,70px)}
+
+/* ── Refined chapters: compact sizing + light. (Overrides the blocks above.) ─────────────── */
+.board{position:relative;isolation:isolate;overflow:hidden;border-color:transparent;border-radius:22px;
+  background:radial-gradient(120% 90% at 0% 0%,rgba(224,162,133,.10),transparent 55%),rgba(19,14,22,.58);
+  -webkit-backdrop-filter:blur(22px) saturate(1.25);backdrop-filter:blur(22px) saturate(1.25);
+  box-shadow:0 40px 90px -40px rgba(0,0,0,.75),0 0 0 1px rgba(0,0,0,.25),inset 0 1px 0 rgba(246,238,232,.06)}
+/* gradient hairline border with a highlight that travels as the chapter progresses */
+.board::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;z-index:2;
+  background:linear-gradient(calc(120deg + var(--k,0) * 90deg),rgba(237,187,160,.7),rgba(246,238,232,.07) 30%,rgba(246,238,232,.05) 70%,rgba(224,162,133,.45));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+/* drifting gold light inside the glass */
+.board::after{content:"";position:absolute;z-index:-1;width:420px;height:420px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle,rgba(224,162,133,.22),rgba(224,162,133,0) 65%);filter:blur(10px);
+  top:-180px;left:calc(-140px + var(--k,0) * 60%);transition:none}
+.board .bhd{padding:14px 20px;border-bottom-color:rgba(58,46,58,.7)}
+.board .bhd .lab,.tabs{font-size:10px}
+.board .lab em{font-family:var(--serif);font-size:13px;letter-spacing:0;text-transform:none}
+
+.board h2{font-size:clamp(28px,min(2.7vw,4.4vh),42px);line-height:1.04;letter-spacing:-.022em}
+.board p{font-size:15px;line-height:1.5;color:#B3A898;max-width:32ch}
+.board .pane{gap:14px;filter:blur(calc(var(--ad,0) * 6px))}
+.board .panes{position:relative}
+.w{display:inline-block;white-space:pre;transform:translateY(calc(var(--d,0) * (12px + var(--i) * 7px)));opacity:calc(1 - var(--ad,0) * (.4 + var(--i) * .12))}
+/* oversized outlined stage numeral behind the copy */
+.ghost{position:absolute;top:-34px;right:-10px;z-index:-1;pointer-events:none;font-family:var(--serif);font-size:168px;line-height:1;letter-spacing:-.04em;
+  color:transparent;-webkit-text-stroke:1px rgba(237,187,160,.16);
+  background:linear-gradient(180deg,rgba(237,187,160,.10),transparent 70%);-webkit-background-clip:text;background-clip:text}
+
+/* Chapter I */
+.dossier{width:min(500px,40vw)}
+.dossier .bbody{grid-template-columns:88px 1fr}
+.dossier .panes{padding:30px 30px 32px;overflow:hidden}
+.rail{gap:34px;padding:32px 0 32px 20px}
+.rail::before,.rail::after{left:31px;top:54px;height:50px}
+.rail li{grid-template-columns:22px 1fr;gap:10px;font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+.rail li span{width:22px;height:22px;font-size:9px}
+.rail li[data-s="on"] span{box-shadow:0 0 0 4px rgba(224,162,133,.12),0 0 18px var(--glow)}
+.dossier .card{border-color:rgba(255,90,110,.22);background:rgba(20,14,20,.7);box-shadow:0 0 30px -10px rgba(255,90,110,.35)}
+.dossier .diff{font-size:13px;padding:14px 16px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.bft .bar{height:2px;background:rgba(58,46,58,.6)}
+.bft .bar i{background:linear-gradient(90deg,rgba(224,162,133,.2),var(--gold-hi));box-shadow:0 0 12px var(--glow)}
+
+/* Chapter II */
+.report{width:min(900px,100%)}
+.report .cols{grid-template-columns:1fr 1.05fr}
+.report .cols>*{padding:28px 30px 30px;border-right-color:rgba(58,46,58,.7)}
+.report .panes:not(.viz){overflow:hidden}
+.tabs{grid-template-columns:repeat(3,minmax(96px,1fr));background:rgba(0,0,0,.18)}
+.tabs span{padding:7px 14px}
+.tabs .ink{background:linear-gradient(180deg,rgba(237,187,160,.22),rgba(224,162,133,.08));border-color:rgba(237,187,160,.55);box-shadow:0 0 18px rgba(224,162,133,.18),inset 0 1px 0 rgba(246,238,232,.12)}
+.report .sim{box-shadow:0 0 40px -14px rgba(224,162,133,.4)}
+.flow,.bench{gap:16px}
+.flow>div{grid-template-columns:72px 1fr 40px;gap:14px}
+.flow .v{padding:6px 0;font-size:10px}
+.flow .r,.bench .n{font-size:38px}
+.flow .v.ok~.r{color:var(--gold-hi);text-shadow:0 0 18px var(--glow)}
+.bench>div{grid-template-columns:76px 1fr 48px;gap:14px}
+.bench b{height:6px}
+.bench .hi b::after{background:linear-gradient(90deg,rgba(224,162,133,.35),var(--gold-hi))}
+.bench .hi .n{text-shadow:0 0 18px var(--glow)}
+
+@media (max-width:1100px) and (min-width:760px){.dossier{width:min(480px,56vw)}}
+@media (max-width:759px){
+  .dossier{width:100%}
+  .board h2{font-size:28px}
+  .ghost{font-size:120px}
+}
+@media (prefers-reduced-motion:reduce){.board .pane{filter:none}.w{transform:none;opacity:1}}
+
+/* ── Smaller numerals and card type. (Overrides the blocks above.) ── */
+.ghost{top:-6px;right:0;font-size:64px;-webkit-text-stroke:1px rgba(237,187,160,.14)}
+.board h2{font-size:clamp(20px,1.6vw,26px);line-height:1.12;letter-spacing:-.015em}
+.board p{font-size:13px;line-height:1.5;max-width:34ch}
+.board .pane{gap:10px}
+.board .bhd{padding:12px 18px}
+.board .bhd .lab,.tabs{font-size:9px}
+.board .lab em{font-size:11px}
+.dossier{width:min(420px,36vw)}
+.dossier .bbody{grid-template-columns:76px 1fr}
+.dossier .panes{padding:22px 22px 24px}
+.rail{gap:28px;padding:24px 0 24px 16px}
+.rail::before,.rail::after{left:25px;top:44px;height:42px}
+.rail li{grid-template-columns:18px 1fr;gap:8px;font-size:9px}
+.rail li span{width:18px;height:18px;font-size:8px}
+.dossier .diff{font-size:11.5px;padding:11px 13px;grid-template-columns:18px 1fr}
+.report{width:min(740px,100%)}
+.report .cols>*{padding:22px 24px 24px}
+.tabs{grid-template-columns:repeat(3,minmax(80px,1fr))}
+.tabs span{padding:6px 12px}
+.flow,.bench{gap:12px}
+.flow>div{grid-template-columns:56px 1fr 28px;gap:12px}
+.flow .v{padding:4px 0;font-size:8.5px}
+.flow .r,.bench .n{font-size:26px}
+.bench>div{grid-template-columns:64px 1fr 34px;gap:12px}
+.bench .lab{font-size:9px}
+.report .sim .ft{padding:0 14px 12px}
+.pass{font-size:10px;padding:4px 12px}
+@media (max-width:1100px) and (min-width:760px){.dossier{width:min(420px,50vw)}}
+@media (max-width:759px){.dossier{width:100%}.board h2{font-size:22px}.ghost{font-size:56px}}
+.ghost{top:-4px;font-size:46px}
+
+/* ── Footer: smaller type, same footprint (height held, wordmark anchored to the bottom). ── */
+footer{min-height:min(85vh,780px);display:flex;flex-direction:column;box-sizing:border-box;padding-top:40px}
+footer .top{font-size:12px}
+footer .top .lab{font-size:9.5px}
+footer .team{margin-top:clamp(28px,4vw,48px);padding-top:22px;gap:24px 40px}
+footer .team p{font-size:clamp(16px,1.35vw,20px);max-width:36ch;line-height:1.3}
+footer .team img.nu{height:clamp(16px,1.5vw,22px)}
+footer .team img.cal{height:clamp(32px,3vw,44px)}
+footer .word{margin-top:auto;padding-bottom:clamp(24px,3vw,44px);font-size:clamp(64px,11vw,180px);line-height:.85;letter-spacing:-.04em}
+footer{min-height:min(52vh,480px)}
+
+/* ── Footer split: wordmark left | hairline divider | team credit right. ── */
+footer .split{flex:1;display:grid;grid-template-columns:1fr 1fr;margin-top:28px;border-top:1px solid rgba(30,22,32,.14)}
+footer .split>*{display:flex;flex-direction:column;justify-content:center;padding:clamp(28px,4vw,56px) 0}
+footer .split .word{margin:0;text-align:left;padding-right:clamp(24px,4vw,64px);border-right:1px solid rgba(30,22,32,.14);font-size:clamp(64px,9vw,150px)}
+footer .split .team{margin:0;border-top:0;padding-left:clamp(24px,4vw,64px);align-items:flex-start;gap:28px;flex-wrap:nowrap}
+footer .split .team p{max-width:32ch}
+@media (max-width:759px){
+  footer .split{grid-template-columns:1fr}
+  footer .split .word{border-right:0;border-bottom:1px solid rgba(30,22,32,.14);padding-right:0}
+  footer .split .team{padding-left:0}
+}
+/* center each half's content */
+footer .split>*{align-items:center;justify-content:center}
+footer .split .word{text-align:center;padding-right:0}
+footer .split .team{padding-left:0;align-items:center}
+footer .split .blob{display:flex;flex-direction:column;align-items:flex-start;gap:24px}
+/* team credit on a single line (wraps only on phones) */
+footer .split .team p{max-width:none;white-space:nowrap;font-size:clamp(12px,.95vw,16px)}
+@media (max-width:759px){footer .split .team p{white-space:normal;font-size:16px}}
+footer .split .logos{align-self:center;justify-content:center}

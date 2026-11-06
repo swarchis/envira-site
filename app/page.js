@@ -4,6 +4,9 @@ import Scene from "@/components/Scene";
 // Replace with your Cal.com / Calendly link; the email field is passed through as a prefill.
 const BOOKING_URL = "https://cal.com";
 
+// Static export base path (GitHub Pages); files in public/ are served under it.
+const BASE = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
 function DemoForm() {
   return (
     <form className="demo" action={BOOKING_URL} method="get" target="_blank">
@@ -18,6 +21,15 @@ function DemoForm() {
       <button type="submit">Book a demo</button>
     </form>
   );
+}
+
+// Splits a headline into words so the chapter panes can stagger them (scene.js sets --d per pane).
+function Words({ children }) {
+  return children.split(" ").map((w, i) => (
+    <span className="w" style={{ "--i": i }} key={i}>
+      {w}{" "}
+    </span>
+  ));
 }
 
 const LABEL = {
@@ -66,40 +78,56 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="beat" data-i="1" data-pos="L">
-          <div className="copy">
-            <span className="lab">
-              <em>01</em> · Seed designs
-            </span>
-            <h2>It starts with real hardware.</h2>
-            <p>
-              We begin from real, permissively licensed Verilog designs. FIFOs, UARTs, timers,
-              interrupt controllers. Working RTL with real corner cases.
-            </p>
-          </div>
-        </section>
-
-        <section className="beat" data-i="2" data-pos="R">
-          <div className="copy">
-            <span className="lab">
-              <em>02</em> · Bug injector
-            </span>
-            <h2>One subtle bug.</h2>
-            <p>
-              Each task gets a realistic fault, the kind an engineer actually makes. Every bug is
-              confirmed to be caught by tests before it ships as a task.
-            </p>
-            <div className="card">
-              <div className="hd lab">
-                <span>Mutation · fifo.v</span>
-                <span>Off by one</span>
+        {/* Chapter I: stops 1-2 share one pinned board; each scroll advances a stage. */}
+        <section className="chapter" id="chA" data-from="1" data-to="2" style={{ "--n": 2 }}>
+          <div className="pin">
+            <div className="copy board dossier">
+              <div className="bhd">
+                <span className="lab">
+                  <em>I</em> · The task
+                </span>
+                <span className="lab ctr">
+                  <b className="cur">01</b> / 02
+                </span>
               </div>
-              <div className="diff">
-                <span className="m">−</span>
-                <span className="m">assign full = (count == DEPTH);</span>
-                <span className="r">+</span>
-                <span>
-                  assign full = (count == DEPTH <u>- 1</u>);
+              <div className="bbody">
+                <ol className="rail">
+                  <li data-k="0">
+                    <span>01</span>Seed
+                  </li>
+                  <li data-k="1">
+                    <span>02</span>Bug
+                  </li>
+                </ol>
+                <div className="panes">
+                  <div className="pane" data-k="0">
+                    <span className="ghost" aria-hidden="true">01</span>
+                    <h2>
+                      <Words>It starts with real hardware.</Words>
+                    </h2>
+                    <p>Open-source Verilog. FIFOs, UARTs, timers.</p>
+                  </div>
+                  <div className="pane" data-k="1">
+                    <span className="ghost" aria-hidden="true">02</span>
+                    <h2>
+                      <Words>One subtle bug.</Words>
+                    </h2>
+                    <div className="card">
+                      <div className="diff">
+                        <span className="m">−</span>
+                        <span className="m">full = (count == DEPTH);</span>
+                        <span className="r">+</span>
+                        <span>
+                          full = (count == DEPTH <u>- 1</u>);
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="bft">
+                <span className="bar">
+                  <i></i>
                 </span>
               </div>
             </div>
@@ -136,94 +164,111 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="beat" data-i="4" data-pos="RT">
-          <div className="copy">
-            <span className="lab">
-              <em>04</em> · Simulator
-            </span>
-            <h2>The simulator grades it.</h2>
-            <p>
-              Every fix runs against hidden tests in simulation. The waveforms match the reference
-              or the fix fails, so it can&apos;t be faked.
-            </p>
-            <div className="card sim">
-              <div className="hd lab">
-                <span>Waveform compare</span>
-                <span>Hidden tests</span>
-              </div>
-              <svg
-                viewBox="-44 0 404 60"
-                role="img"
-                aria-label="Golden and agent-fix waveforms locking into alignment"
-              >
-                <text x="-44" y="15" {...LABEL}>
-                  CLK
-                </text>
-                <text x="-44" y="49" {...LABEL}>
-                  DATA
-                </text>
-                <polyline id="sclk" fill="none" stroke="#7D7266" strokeWidth="1" points=""></polyline>
-                <polyline
-                  id="sgold"
-                  fill="none"
-                  stroke="#C49A55"
-                  strokeWidth="4"
-                  strokeOpacity=".7"
-                  points=""
-                ></polyline>
-                <g id="sfixg">
-                  <polyline id="sfix" fill="none" stroke="#F1EADF" strokeWidth="1.2" points=""></polyline>
-                </g>
-              </svg>
-              <div className="ft">
-                <div className="key lab">
-                  <span>
-                    <b style={{ height: 4, background: "#C49A55" }}></b>Golden
-                  </span>
-                  <span>
-                    <b style={{ height: 1, background: "#F1EADF" }}></b>Agent fix
-                  </span>
-                </div>
-                <div className="pass" id="pass">
-                  PASS
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="beat" data-i="5" data-pos="LT">
-          <div className="copy">
-            <span className="lab">
-              <em>05</em> · Reward
-            </span>
-            <h2>The verdict becomes reward.</h2>
-            <p>
-              Pass or fail flows back to the model as a clean reward signal. Thousands of times
-              over. That is the training loop.
-            </p>
-          </div>
-        </section>
-
-        <section className="beat" data-i="6" data-pos="BOT">
-          <div className="copy wide">
-            <span className="lab">
-              <em>06</em> · Proof
-            </span>
-            <div className="stats">
-              <div className="stat">
-                <span className="n">1,009</span>
-                <span className="lab">Bug-fix tasks across 12 seed designs</span>
-              </div>
-              <div className="stat">
-                <span className="n">0 / 0</span>
-                <span className="lab">False rejects / misses. Grader validated on 637 mutants</span>
-              </div>
-              <div className="stat">
-                <span className="n">
-                  9 <i>→</i> 30
+        {/* Chapter II: stops 4-6 share one pinned report; each scroll advances a stage. */}
+        <section className="chapter" id="chB" data-from="4" data-to="6" style={{ "--n": 3 }}>
+          <div className="pin">
+            <div className="copy board report">
+              <div className="bhd">
+                <span className="lab">
+                  <em>II</em> · Verification
                 </span>
-                <span className="lab">Hard tasks solved, of 40. One-shot vs. agent mode with tools</span>
+                <div className="tabs lab" role="list">
+                  <span role="listitem" data-k="0">
+                    Simulator
+                  </span>
+                  <span role="listitem" data-k="1">
+                    Reward
+                  </span>
+                  <span role="listitem" data-k="2">
+                    Proof
+                  </span>
+                  <i className="ink"></i>
+                </div>
+                <span className="lab ctr">
+                  <b className="cur">04</b> / 06
+                </span>
+              </div>
+              <div className="cols">
+                <div className="panes">
+                  <div className="pane" data-k="0">
+                    <span className="ghost" aria-hidden="true">04</span>
+                    <h2>
+                      <Words>The simulator grades it.</Words>
+                    </h2>
+                    <p>Hidden tests. Match the reference, or fail.</p>
+                  </div>
+                  <div className="pane" data-k="1">
+                    <span className="ghost" aria-hidden="true">05</span>
+                    <h2>
+                      <Words>The verdict becomes reward.</Words>
+                    </h2>
+                    <p>Pass or fail, straight back to the model.</p>
+                  </div>
+                  <div className="pane" data-k="2">
+                    <span className="ghost" aria-hidden="true">06</span>
+                    <h2>
+                      <Words>Tools triple the score.</Words>
+                    </h2>
+                    <p>Hard tasks solved, out of 40.</p>
+                  </div>
+                </div>
+                <div className="panes viz">
+                  <div className="pane card sim" data-k="0">
+                    <svg
+                      viewBox="-44 0 404 60"
+                      role="img"
+                      aria-label="Golden and agent-fix waveforms locking into alignment"
+                    >
+                      <text x="-44" y="15" {...LABEL}>
+                        CLK
+                      </text>
+                      <text x="-44" y="49" {...LABEL}>
+                        DATA
+                      </text>
+                      <polyline id="sclk" fill="none" stroke="#7D7266" strokeWidth="1" points=""></polyline>
+                      <polyline
+                        id="sgold"
+                        fill="none"
+                        stroke="#C49A55"
+                        strokeWidth="4"
+                        strokeOpacity=".7"
+                        points=""
+                      ></polyline>
+                      <g id="sfixg">
+                        <polyline id="sfix" fill="none" stroke="#F1EADF" strokeWidth="1.2" points=""></polyline>
+                      </g>
+                    </svg>
+                    <div className="ft">
+                      <div className="pass" id="pass">
+                        PASS
+                      </div>
+                    </div>
+                  </div>
+                  <div className="pane flow" data-k="1">
+                    <div>
+                      <span className="v ok">PASS</span>
+                      <i></i>
+                      <span className="r">1</span>
+                    </div>
+                    <div>
+                      <span className="v">FAIL</span>
+                      <i></i>
+                      <span className="r">0</span>
+                    </div>
+                  </div>
+                  <div className="pane bench" data-k="2">
+                    <div>
+                      <span className="lab">One-shot</span>
+                      <b style={{ "--w": 9 / 40 }}></b>
+                      <span className="n">9</span>
+                    </div>
+                    <div className="hi">
+                      <span className="lab">Agent</span>
+                      <b style={{ "--w": 30 / 40 }}></b>
+                      <span className="n">30</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -260,8 +305,22 @@ export default function Home() {
           <span className="lab">Envira · RL environments for hardware</span>
           <span>[your email]</span>
         </div>
-        <div className="word" aria-hidden="true">
-          Envira
+        <div className="split">
+          <div className="word" aria-hidden="true">
+            Envira
+          </div>
+          <div className="team">
+            <div className="blob">
+            <p>
+              Built by a team from Northwestern and Berkeley, having worked in frontier ML labs and
+              data companies.
+            </p>
+            <div className="logos">
+              <img className="nu" src={`${BASE}/logos/northwestern.svg`} alt="Northwestern University" />
+              <img className="cal" src={`${BASE}/logos/berkeley.svg`} alt="UC Berkeley" />
+            </div>
+            </div>
+          </div>
         </div>
       </footer>
 
