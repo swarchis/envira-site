@@ -49,11 +49,8 @@ export default function Home() {
         <div className="panel"></div>
       </div>
 
-      <header className="pill">
+      <header className="brand">
         <span className="mark">Envira</span>
-        <a className="btn" href={BOOKING_URL} target="_blank" rel="noopener">
-          Book a call
-        </a>
       </header>
 
       <div id="tip" role="status" aria-live="polite">
@@ -303,7 +300,10 @@ export default function Home() {
       <footer>
         <div className="top">
           <span className="lab">Envira · RL environments for hardware</span>
-          <span>[your email]</span>
+          <span className="contact">
+            <a href="mailto:swarchis@berkeley.edu">swarchis@berkeley.edu</a> ·{" "}
+            <a href="mailto:noelthomas@u.northwestern.edu">noelthomas@u.northwestern.edu</a>
+          </span>
         </div>
         <div className="split">
           <div className="word" aria-hidden="true">

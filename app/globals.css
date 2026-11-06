@@ -17,8 +17,8 @@ body{font-family:var(--sans);font-size:16px;-webkit-font-smoothing:antialiased;f
 .frame{position:fixed;inset:0;z-index:2;pointer-events:none}
 .frame .panel{position:absolute;top:calc(12px + env(safe-area-inset-top,0px));bottom:calc(12px + env(safe-area-inset-bottom,0px));left:max(12px,env(safe-area-inset-left,0px));right:max(12px,env(safe-area-inset-right,0px));border:1px solid rgba(241,234,223,.09);border-radius:28px}
 
-/* floating pill header */
-.pill{position:fixed;z-index:6;top:calc(24px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);width:min(620px,calc(100% - 32px));box-sizing:border-box;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:7px 7px 7px 22px;background:rgba(30,22,32,.42);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:999px}
+/* wordmark, top-left inside the panel frame */
+.brand{position:fixed;z-index:6;top:calc(30px + env(safe-area-inset-top,0px));left:max(38px,calc(env(safe-area-inset-left,0px) + 26px));pointer-events:none;text-shadow:0 1px 18px rgba(40,24,40,.4)}
 .mark{font-family:var(--serif);font-size:23px;font-weight:400;letter-spacing:-.01em;color:var(--cream);display:flex;align-items:center;gap:12px}
 @keyframes pulse{50%{box-shadow:0 0 3px var(--glow)}}
 
@@ -102,6 +102,8 @@ footer{position:relative;z-index:7;background:var(--paper);color:var(--ink);bord
   padding-top:48px;padding-bottom:env(safe-area-inset-bottom,0px);padding-left:max(16px,env(safe-area-inset-left,0px),5vw);padding-right:max(16px,env(safe-area-inset-right,0px),5vw)}
 footer .top{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-size:15px}
 footer .top .lab{color:var(--ink-mute)}
+footer .contact a{color:inherit;text-decoration:none;border-bottom:1px solid transparent;transition:border-color .2s}
+footer .contact a:hover,footer .contact a:focus-visible{border-bottom-color:currentColor;outline:0}
 footer .word{font-family:var(--serif);font-weight:400;font-size:clamp(110px,27vw,440px);line-height:.78;letter-spacing:-.045em;text-align:center;margin-top:clamp(40px,8vw,120px);white-space:nowrap}
 
 .copy>*{will-change:transform}
@@ -115,7 +117,7 @@ footer .word{font-family:var(--serif);font-weight:400;font-size:clamp(110px,27vw
   #hero,#book{align-items:center;padding:0 16px}
   p{font-size:16px}
   .stats{gap:16px} .stat .n{font-size:40px}
-  .pill{padding-left:16px}.mark{font-size:20px}
+  .brand{top:calc(26px + env(safe-area-inset-top,0px));left:30px}.mark{font-size:20px}
 }
 @media (prefers-reduced-motion:reduce){.cue i,#hero .copy>*,.haze,.mark::before,.btn::before{animation:none}}
 /* opening + closing beats: compact centered hero over the sky.
